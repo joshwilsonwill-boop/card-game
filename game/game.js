@@ -142,6 +142,8 @@
     if (won) wins++; else losses++;
     $('endWord').textContent = won ? 'VICTORY' : 'DEFEAT';
     $('endWord').className = 'bigword ' + (won ? 'win' : 'loss');
+    $('endCrown').textContent = won ? '\u265A' : '\u265B';
+    $('endCrown').className = 'crown ' + (won ? 'win' : 'loss');
     $('endSub').textContent = won ? 'The Ember Court is yours. The Ash Regent bows.' : 'The Ash Regent keeps the throne. The embers wait for a rematch.';
     $('endStats').innerHTML = 'Turns played: <b>' + S.turn + '</b><br>Cards played: <b>' + S.cardsPlayed +
       '</b><br>Attacks made: <b>' + S.attacksMade + '</b><br>Your life: <b>' + S.player.life +
@@ -400,6 +402,7 @@
     var html = '<div class="cost">' + card.cost + '</div>' +
       '<div class="suitTag" style="color:' + suit.color + '">' + card.suit + '</div>' +
       '<div class="art" style="background:' + suit.grad + '">' + suit.glyph + '</div>' +
+      (card.guard ? '<div class="guardTag">GUARD</div>' : '') +
       '<div class="cname">' + escapeHtml(card.name) + '</div>' +
       '<div class="ctype">' + (card.type === 'creature' ? (card.guard ? 'Guard Creature' : 'Creature') : 'Spell') + '</div>' +
       '<div class="ctext">' + escapeHtml(card.text) + '</div>';
@@ -608,7 +611,7 @@
   // ---- ember particles (procedural canvas background) ----
   var canvas = $('embers'), ctx = canvas.getContext('2d');
   var parts = [];
-  for (var p = 0; p < 40; p++) {
+  for (var p = 0; p < 64; p++) {
     parts.push({ x: Math.random() * 1280, y: Math.random() * 720, r: 1 + Math.random() * 2.5,
       s: 0.2 + Math.random() * 0.6, a: 0.15 + Math.random() * 0.4 });
   }
@@ -636,19 +639,19 @@
   function presetTable() {
     newGame();
     var P = S.player, E = S.enemy;
-    P.life = 24; E.life = 19;
-    P.maxMana = 7; P.mana = 7; E.maxMana = 6; E.mana = 2;
-    S.turn = 6;
-    P.board = [makeCard('sentinel'), makeCard('wolf'), makeCard('knight')];
-    P.board[0].canAttack = true; P.board[1].canAttack = true; P.board[2].canAttack = false;
-    E.board = [makeCard('golem'), makeCard('serpent')];
-    E.board[0].canAttack = false; E.board[1].canAttack = false;
-    P.hand = [makeCard('bolt'), makeCard('dragon'), makeCard('spring'), makeCard('phoenix'), makeCard('sprout')];
+    P.life = 22; E.life = 15;
+    P.maxMana = 9; P.mana = 9; E.maxMana = 8; E.mana = 3;
+    S.turn = 8;
+    P.board = [makeCard('sentinel'), makeCard('wolf'), makeCard('knight'), makeCard('phoenix')];
+    P.board[0].canAttack = true; P.board[1].canAttack = true; P.board[2].canAttack = true; P.board[3].canAttack = false;
+    E.board = [makeCard('golem'), makeCard('serpent'), makeCard('knight')];
+    E.board[0].canAttack = false; E.board[1].canAttack = false; E.board[2].canAttack = false;
+    P.hand = [makeCard('bolt'), makeCard('dragon'), makeCard('spring'), makeCard('phoenix'), makeCard('sprout'), makeCard('wisdom')];
     E.hand = [makeCard('imp'), makeCard('wolf'), makeCard('bolt'), makeCard('serpent')];
-    P.deck = P.deck.slice(0, 18); E.deck = E.deck.slice(0, 21);
-    S.cardsPlayed = 9; S.attacksMade = 7;
+    P.deck = P.deck.slice(0, 15); E.deck = E.deck.slice(0, 18);
+    S.cardsPlayed = 14; S.attacksMade = 11;
     S.log = [
-      { msg: 'Your turn 6: 7 mana.', turn: true },
+      { msg: 'Your turn 8: 9 mana.', turn: true },
       { msg: 'The Regent summons Tide Serpent (4/4).', turn: false },
       { msg: 'Your Flame Knight strikes the Regent for 5.', turn: false },
       { msg: 'Wildfire scorched the Regent court for 2.', turn: false }
@@ -656,13 +659,43 @@
     render();
   }
 
+  // Cover staging: the most dramatic mid-game state the table can hold.
+  // Full 7-card hand, 5 creatures against 4, 10 mana, a close life race,
+  // and Ember Bolt armed with the Regent in its sights.
+  function presetCover() {
+    newGame();
+    var P = S.player, E = S.enemy;
+    P.life = 18; E.life = 12;
+    P.maxMana = 10; P.mana = 10; E.maxMana = 10; E.mana = 4;
+    S.turn = 9;
+    wins = 2; losses = 1;
+    P.board = [makeCard('golem'), makeCard('knight'), makeCard('phoenix'), makeCard('dragon'), makeCard('wolf')];
+    P.board[0].canAttack = true; P.board[1].canAttack = true; P.board[2].canAttack = true;
+    P.board[3].canAttack = false; P.board[4].canAttack = true;
+    E.board = [makeCard('sentinel'), makeCard('serpent'), makeCard('knight'), makeCard('golem')];
+    E.board[0].canAttack = false; E.board[1].canAttack = false; E.board[2].canAttack = false; E.board[3].canAttack = false;
+    P.hand = [makeCard('bolt'), makeCard('dragon'), makeCard('wildfire'), makeCard('spring'), makeCard('wisdom'), makeCard('phoenix'), makeCard('imp')];
+    E.hand = [makeCard('imp'), makeCard('wolf'), makeCard('bolt'), makeCard('serpent'), makeCard('dragon')];
+    P.deck = P.deck.slice(0, 12); E.deck = E.deck.slice(0, 14);
+    S.cardsPlayed = 18; S.attacksMade = 15;
+    S.log = [
+      { msg: 'EMBER COURT - turn 9: the throne hangs on this turn.', turn: true },
+      { msg: 'The Regent summons Moss Golem (4/6).', turn: false },
+      { msg: 'Your Ember Dragon lands (7/6).', turn: false },
+      { msg: 'Your Flame Knight strikes the Regent for 5.', turn: false }
+    ];
+    selected = { kind: 'hand', index: 0 };
+    targeting = { handIndex: 0 };
+    render();
+    $('turnLabel').textContent = 'EMBER COURT';
+    $('hint').innerHTML = 'Turn 9 - one bolt from the throne.<br>Click a card, then a target.';
+  }
+
   function applyShot() {
     var q = new URLSearchParams(window.location.search).get('shot');
     if (!q) return;
     if (q === 'title') {
-      S = { screen: 'title', turn: 1, active: 'player', over: false,
-        player: newSide(), enemy: newSide(), log: [], cardsPlayed: 0, attacksMade: 0 };
-      render();
+      presetCover();
     } else if (q === 'table') {
       presetTable();
     } else if (q === 'win') {

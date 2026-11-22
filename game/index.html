@@ -15,6 +15,10 @@
   #embers { position: absolute; inset: 0; }
   .felt { position: absolute; inset: 0;
     background: radial-gradient(ellipse at 50% 42%, #5a2c14 0%, #3a1c0d 45%, #241207 100%); }
+  .felt::before { content: "\265B"; position: absolute; left: 50%; top: 46%;
+    transform: translate(-50%,-50%); font-size: 320px; color: rgba(201,162,39,.07); }
+  .vignette { position: absolute; inset: 0; z-index: 3; pointer-events: none;
+    box-shadow: inset 0 0 130px rgba(0,0,0,.6), inset 0 0 40px rgba(0,0,0,.35); }
   .felt::after { content: ""; position: absolute; inset: 0;
     background: radial-gradient(ellipse at 50% 50%, rgba(255,180,80,0.10), transparent 60%); }
   .goldline { position: absolute; left: 24px; right: 24px; height: 2px;
@@ -31,15 +35,17 @@
   .who { line-height: 1.15; }
   .who .name { font-size: 20px; font-weight: bold; letter-spacing: 1px; }
   .who .sub { font-size: 13px; color: #d8b98a; }
-  .life { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: bold; }
-  .heart { color: #ff5a4e; font-size: 24px; }
-  .lifebar { width: 170px; height: 16px; background: #00000088; border: 1px solid #c9a227;
-    border-radius: 8px; overflow: hidden; }
+  .life { display: flex; align-items: center; gap: 8px; font-size: 26px; font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0,0,0,.6); }
+  .heart { color: #ff5a4e; font-size: 28px; }
+  .lifebar { width: 170px; height: 18px; background: #00000088; border: 1px solid #c9a227;
+    border-radius: 9px; overflow: hidden; box-shadow: 0 0 10px rgba(255,122,47,.25); }
   .lifefill { height: 100%; background: linear-gradient(90deg, #e23b2e, #ff7a4e); transition: width .4s; }
   .lifefill.you { background: linear-gradient(90deg, #2e9e4e, #7ed957); }
   .pill { background: #00000066; border: 1px solid #c9a22788; border-radius: 12px;
     padding: 6px 12px; font-size: 15px; white-space: nowrap; }
   .pill b { color: #ffd76a; }
+  .manaGem { color: #5ab8ff; font-size: 16px; margin-right: 2px; }
   .spacer { flex: 1; }
   /* Boards */
   .board { position: absolute; left: 0; right: 0; height: 140px; display: flex;
@@ -47,7 +53,8 @@
   #enemyBoard { top: 68px; }
   #playerBoard { top: 336px; }
   .boardLabel { position: absolute; left: 30px; font-size: 12px; letter-spacing: 2px;
-    color: #d8b98a; text-transform: uppercase; z-index: 4; }
+    color: #d8b98a; text-transform: uppercase; z-index: 4;
+    border-bottom: 1px solid #c9a22755; padding-bottom: 3px; }
   #enemyBoardLabel { top: 72px; }
   #playerBoardLabel { top: 340px; }
   .emptySlot { width: 104px; height: 132px; border: 2px dashed #c9a22744; border-radius: 10px;
@@ -56,7 +63,7 @@
   /* Cards */
   .card { position: relative; width: 132px; height: 172px; border-radius: 10px; flex: 0 0 auto;
     background: linear-gradient(160deg, #f7ead0 0%, #e8d3a8 55%, #d9bd85 100%);
-    color: #241207; border: 3px solid #6b4a1f; box-shadow: 0 4px 10px rgba(0,0,0,.55);
+    color: #241207; border: 3px solid #6b4a1f; box-shadow: inset 0 0 0 2px rgba(201,162,39,.4), 0 4px 10px rgba(0,0,0,.55);
     cursor: pointer; transition: transform .15s, box-shadow .15s; overflow: hidden; }
   .card:hover { transform: translateY(-8px); }
   .card.selected { transform: translateY(-14px); border-color: #ffd76a;
@@ -71,8 +78,14 @@
   .card .suitTag { position: absolute; right: 6px; top: 8px; font-size: 11px; font-weight: bold;
     letter-spacing: 1px; text-transform: uppercase; }
   .card .art { position: absolute; left: 8px; right: 8px; top: 34px; height: 48px; border-radius: 6px;
-    display: flex; align-items: center; justify-content: center; font-size: 44px;
-    border: 2px solid #6b4a1f66; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,.5); }
+    display: flex; align-items: center; justify-content: center; font-size: 52px;
+    border: 2px solid #6b4a1f66; color: #fff;
+    text-shadow: 0 0 14px rgba(255,255,255,.4), 0 2px 4px rgba(0,0,0,.5);
+    box-shadow: inset 0 0 18px rgba(255,255,255,.28), inset 0 -10px 16px rgba(0,0,0,.28); }
+  .card .guardTag { position: absolute; left: 10px; right: 10px; top: 64px; z-index: 2;
+    text-align: center; font-size: 10px; font-weight: bold; letter-spacing: 2px; color: #fff;
+    background: rgba(140,100,10,.94); border: 1px solid #ffd76a; border-radius: 4px; padding: 1px 0; }
+  .card.mini .guardTag { top: 50px; font-size: 9px; left: 8px; right: 8px; }
   .card .cname { position: absolute; left: 6px; right: 6px; top: 86px; text-align: center;
     font-size: 13px; font-weight: bold; }
   .card .ctype { position: absolute; left: 6px; right: 6px; top: 102px; text-align: center;
@@ -89,7 +102,7 @@
   .card .sick { position: absolute; left: 0; right: 0; bottom: 28px; text-align: center;
     font-size: 10px; color: #8a6a2f; font-weight: bold; }
   .card.mini { width: 104px; height: 138px; }
-  .card.mini .art { top: 28px; height: 40px; font-size: 26px; }
+  .card.mini .art { top: 28px; height: 40px; font-size: 30px; }
   .card.mini .cname { top: 70px; font-size: 11px; }
   .card.mini .ctype { display: none; }
   .card.mini .ctext { display: none; }
@@ -105,16 +118,19 @@
   #enemyHand { position: absolute; left: 0; right: 0; top: 0; height: 0; display: none; }
   .enemyHandRow { position: absolute; top: 76px; right: 24px; display: flex; gap: 4px; z-index: 5; }
   .miniBack { width: 26px; height: 38px; border-radius: 4px; background: linear-gradient(160deg, #7a1f1f, #4a0f0f);
-    border: 2px solid #c9a227; }
+    border: 2px solid #c9a227; position: relative; }
+  .miniBack::after { content: "\265B"; position: absolute; inset: 0; display: flex;
+    align-items: center; justify-content: center; color: #c9a227; font-size: 15px; }
   /* Center strip */
   #center { position: absolute; left: 24px; right: 24px; top: 214px; height: 116px; z-index: 5;
     display: flex; align-items: center; gap: 16px; }
-  #log { flex: 1; background: #00000055; border: 1px solid #c9a22755; border-radius: 10px;
-    height: 96px; padding: 10px 14px; font-size: 14px; line-height: 1.5; color: #e8d3a8;
+  #log { flex: 1; background: #00000066; border: 1px solid #c9a22755; border-radius: 10px;
+    height: 96px; padding: 10px 14px; font-size: 15px; line-height: 1.5; color: #e8d3a8;
     overflow: hidden; }
   #log .turn { color: #ffd76a; font-weight: bold; }
   #turnBox { width: 210px; text-align: center; }
-  #turnLabel { font-size: 18px; font-weight: bold; letter-spacing: 1px; margin-bottom: 8px; }
+  #turnLabel { font-size: 18px; font-weight: bold; letter-spacing: 1px; margin-bottom: 8px;
+    color: #ffd76a; text-shadow: 0 0 10px rgba(255,215,106,.5); }
   #endTurn { font-family: inherit; font-size: 19px; font-weight: bold; letter-spacing: 1px;
     padding: 12px 22px; border-radius: 10px; border: 2px solid #ffd76a; cursor: pointer;
     background: linear-gradient(180deg, #c0392b, #8e2418); color: #fff; width: 100%; }
@@ -142,9 +158,14 @@
     text-align: left; margin-bottom: 22px; }
   .howto b { color: #ffd76a; }
   .bigword { font-size: 96px; font-weight: bold; letter-spacing: 8px; }
+  .crown { font-size: 76px; line-height: 1; margin-bottom: 4px; }
+  .crown.win { color: #ffd76a; text-shadow: 0 0 34px rgba(255,215,106,.9), 0 4px 0 #6b2a00; }
+  .crown.loss { color: #b03030; text-shadow: 0 0 34px rgba(255,90,78,.7), 0 4px 0 #2a0505; }
   .bigword.win { color: #7ed957; text-shadow: 0 0 30px rgba(126,217,87,.8); }
   .bigword.loss { color: #ff5a4e; text-shadow: 0 0 30px rgba(255,90,78,.8); }
-  .endstats { font-size: 18px; line-height: 1.7; color: #e8d3a8; margin: 10px 0 22px; }
+  .endstats { font-size: 18px; line-height: 1.7; color: #e8d3a8; margin: 10px 0 22px;
+    background: #00000066; border: 1px solid #c9a22788; border-radius: 12px;
+    padding: 14px 34px; display: inline-block; }
   .keys { font-size: 13px; color: #d8b98a; margin-top: 16px; }
   #muteBtn { position: absolute; top: 12px; right: 24px; z-index: 30; }
   .floater { position: absolute; z-index: 15; font-size: 30px; font-weight: bold; pointer-events: none;
@@ -158,6 +179,7 @@
 <div id="stage">
   <div class="felt"></div>
   <canvas id="embers" width="1280" height="720"></canvas>
+  <div class="vignette"></div>
   <div class="goldline" style="top:64px"></div>
   <div class="goldline" style="top:478px"></div>
 
@@ -166,7 +188,7 @@
     <div class="who"><div class="name">THE ASH REGENT</div><div class="sub">Ruler of the Ember Court</div></div>
     <div class="life"><span class="heart">&#x2764;</span><span id="enemyLife">30</span>
       <div class="lifebar"><div class="lifefill" id="enemyLifeFill" style="width:100%"></div></div></div>
-    <div class="pill">Mana <b id="enemyMana">0/0</b></div>
+    <div class="pill"><span class="manaGem">&#x25C6;</span> Mana <b id="enemyMana">0/0</b></div>
     <div class="pill">Deck <b id="enemyDeck">30</b></div>
     <div class="spacer"></div>
     <div class="enemyHandRow" id="enemyHandRow"></div>
@@ -192,7 +214,7 @@
     <div class="who"><div class="name">EMBER WARDEN</div><div class="sub">You, challenger of the court</div></div>
     <div class="life"><span class="heart">&#x2764;</span><span id="playerLife">30</span>
       <div class="lifebar"><div class="lifefill you" id="playerLifeFill" style="width:100%"></div></div></div>
-    <div class="pill">Mana <b id="playerMana">0/0</b></div>
+    <div class="pill"><span class="manaGem">&#x25C6;</span> Mana <b id="playerMana">0/0</b></div>
     <div class="pill">Deck <b id="playerDeck">30</b></div>
     <div class="pill">Turn <b id="turnNum">1</b></div>
     <div class="spacer"></div>
@@ -217,6 +239,7 @@
   </div>
 
   <div class="overlay hidden" id="endScreen">
+    <div class="crown win" id="endCrown">&#x265A;</div>
     <div class="bigword win" id="endWord">VICTORY</div>
     <div class="subtitle" id="endSub">The Ember Court is yours.</div>
     <div class="endstats" id="endStats"></div>
