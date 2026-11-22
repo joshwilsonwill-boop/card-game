@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Ember Court - A Card Battler</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: #120a08; overflow: hidden;
+    font-family: Georgia, 'Times New Roman', serif; }
+  #stage { position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px;
+    transform-origin: center center; background: #1a0f0a; color: #f3e6c8;
+    overflow: hidden; user-select: none; }
+  #embers { position: absolute; inset: 0; }
+  .felt { position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 42%, #5a2c14 0%, #3a1c0d 45%, #241207 100%); }
+  .felt::after { content: ""; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(255,180,80,0.10), transparent 60%); }
+  .goldline { position: absolute; left: 24px; right: 24px; height: 2px;
+    background: linear-gradient(90deg, transparent, #c9a227, transparent); }
+  /* Info bars */
+  .infobar { position: absolute; left: 24px; right: 24px; height: 56px; display: flex;
+    align-items: center; gap: 14px; z-index: 5; }
+  #enemyBar { top: 8px; }
+  #playerBar { top: 482px; }
+  .avatar { width: 48px; height: 48px; border-radius: 50%; flex: 0 0 48px;
+    display: flex; align-items: center; justify-content: center; font-size: 26px;
+    font-weight: bold; border: 3px solid #c9a227; background: #2c1608; }
+  .avatar.enemy { background: #3d0d0d; border-color: #b03030; }
+  .who { line-height: 1.15; }
+  .who .name { font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+  .who .sub { font-size: 13px; color: #d8b98a; }
+  .life { display: flex; align-items: center; gap: 8px; font-size: 22px; font-weight: bold; }
+  .heart { color: #ff5a4e; font-size: 24px; }
+  .lifebar { width: 170px; height: 16px; background: #00000088; border: 1px solid #c9a227;
+    border-radius: 8px; overflow: hidden; }
+  .lifefill { height: 100%; background: linear-gradient(90deg, #e23b2e, #ff7a4e); transition: width .4s; }
+  .lifefill.you { background: linear-gradient(90deg, #2e9e4e, #7ed957); }
+  .pill { background: #00000066; border: 1px solid #c9a22788; border-radius: 12px;
+    padding: 6px 12px; font-size: 15px; white-space: nowrap; }
+  .pill b { color: #ffd76a; }
+  .spacer { flex: 1; }
+  /* Boards */
+  .board { position: absolute; left: 0; right: 0; height: 140px; display: flex;
+    align-items: center; justify-content: center; gap: 10px; z-index: 4; }
+  #enemyBoard { top: 68px; }
+  #playerBoard { top: 336px; }
+  .boardLabel { position: absolute; left: 30px; font-size: 12px; letter-spacing: 2px;
+    color: #d8b98a; text-transform: uppercase; z-index: 4; }
+  #enemyBoardLabel { top: 72px; }
+  #playerBoardLabel { top: 340px; }
+  .emptySlot { width: 104px; height: 132px; border: 2px dashed #c9a22744; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; color: #c9a22766;
+    font-size: 13px; text-align: center; padding: 6px; }
+  /* Cards */
+  .card { position: relative; width: 132px; height: 172px; border-radius: 10px; flex: 0 0 auto;
+    background: linear-gradient(160deg, #f7ead0 0%, #e8d3a8 55%, #d9bd85 100%);
+    color: #241207; border: 3px solid #6b4a1f; box-shadow: 0 4px 10px rgba(0,0,0,.55);
+    cursor: pointer; transition: transform .15s, box-shadow .15s; overflow: hidden; }
+  .card:hover { transform: translateY(-8px); }
+  .card.selected { transform: translateY(-14px); border-color: #ffd76a;
+    box-shadow: 0 0 0 3px #ffd76a, 0 8px 18px rgba(0,0,0,.6); }
+  .card.playable { box-shadow: 0 0 0 2px #7ed957, 0 4px 10px rgba(0,0,0,.55); }
+  .card.targetable { animation: pulse 0.9s infinite; cursor: crosshair; }
+  .card.cantAttack { opacity: .75; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 3px #ff5a4e; } 50% { box-shadow: 0 0 0 7px #ff5a4e88; } }
+  .card .cost { position: absolute; left: 5px; top: 5px; width: 30px; height: 30px; border-radius: 50%;
+    background: #1d5fa8; color: #fff; font-weight: bold; font-size: 18px; display: flex;
+    align-items: center; justify-content: center; border: 2px solid #fff; z-index: 2; }
+  .card .suitTag { position: absolute; right: 6px; top: 8px; font-size: 11px; font-weight: bold;
+    letter-spacing: 1px; text-transform: uppercase; }
+  .card .art { position: absolute; left: 8px; right: 8px; top: 34px; height: 48px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; font-size: 44px;
+    border: 2px solid #6b4a1f66; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,.5); }
+  .card .cname { position: absolute; left: 6px; right: 6px; top: 86px; text-align: center;
+    font-size: 13px; font-weight: bold; }
+  .card .ctype { position: absolute; left: 6px; right: 6px; top: 102px; text-align: center;
+    font-size: 11px; font-style: italic; color: #5a3a18; }
+  .card .ctext { position: absolute; left: 8px; right: 8px; top: 116px; text-align: center;
+    font-size: 11px; line-height: 1.25; color: #3a2410; }
+  .card .atk { position: absolute; left: 5px; bottom: 4px; width: 26px; height: 26px; border-radius: 50%;
+    background: #c0392b; color: #fff; font-weight: bold; font-size: 18px; display: flex;
+    align-items: center; justify-content: center; border: 2px solid #fff; z-index: 2; }
+  .card .hp { position: absolute; right: 5px; bottom: 4px; width: 26px; height: 26px; border-radius: 50%;
+    background: #2e7d32; color: #fff; font-weight: bold; font-size: 18px; display: flex;
+    align-items: center; justify-content: center; border: 2px solid #fff; z-index: 2; }
+  .card.guarded { border-color: #ffd76a; box-shadow: 0 0 0 2px #c9a227, 0 4px 10px rgba(0,0,0,.55); }
+  .card .sick { position: absolute; left: 0; right: 0; bottom: 28px; text-align: center;
+    font-size: 10px; color: #8a6a2f; font-weight: bold; }
+  .card.mini { width: 104px; height: 138px; }
+  .card.mini .art { top: 28px; height: 40px; font-size: 26px; }
+  .card.mini .cname { top: 70px; font-size: 11px; }
+  .card.mini .ctype { display: none; }
+  .card.mini .ctext { display: none; }
+  .card.mini .cost, .card.mini .atk, .card.mini .hp { width: 24px; height: 24px; font-size: 14px; }
+  .card.mini .atk, .card.mini .hp { width: 22px; height: 22px; font-size: 13px; bottom: 3px; }
+  .card.back { background: linear-gradient(160deg, #7a1f1f, #4a0f0f);
+    border-color: #c9a227; display: flex; align-items: center; justify-content: center;
+    color: #ffd76a; font-size: 40px; cursor: default; }
+  .card.back:hover { transform: none; }
+  /* Hand */
+  #hand { position: absolute; left: 0; right: 0; bottom: 6px; height: 174px; display: flex;
+    align-items: flex-end; justify-content: center; gap: 8px; z-index: 6; }
+  #enemyHand { position: absolute; left: 0; right: 0; top: 0; height: 0; display: none; }
+  .enemyHandRow { position: absolute; top: 76px; right: 24px; display: flex; gap: 4px; z-index: 5; }
+  .miniBack { width: 26px; height: 38px; border-radius: 4px; background: linear-gradient(160deg, #7a1f1f, #4a0f0f);
+    border: 2px solid #c9a227; }
+  /* Center strip */
+  #center { position: absolute; left: 24px; right: 24px; top: 214px; height: 116px; z-index: 5;
+    display: flex; align-items: center; gap: 16px; }
+  #log { flex: 1; background: #00000055; border: 1px solid #c9a22755; border-radius: 10px;
+    height: 96px; padding: 10px 14px; font-size: 14px; line-height: 1.5; color: #e8d3a8;
+    overflow: hidden; }
+  #log .turn { color: #ffd76a; font-weight: bold; }
+  #turnBox { width: 210px; text-align: center; }
+  #turnLabel { font-size: 18px; font-weight: bold; letter-spacing: 1px; margin-bottom: 8px; }
+  #endTurn { font-family: inherit; font-size: 19px; font-weight: bold; letter-spacing: 1px;
+    padding: 12px 22px; border-radius: 10px; border: 2px solid #ffd76a; cursor: pointer;
+    background: linear-gradient(180deg, #c0392b, #8e2418); color: #fff; width: 100%; }
+  #endTurn:hover:not(:disabled) { filter: brightness(1.2); }
+  #endTurn:disabled { opacity: .45; cursor: default; }
+  #hint { font-size: 12px; color: #d8b98a; margin-top: 8px; line-height: 1.4; }
+  /* Buttons */
+  .bigbtn { font-family: inherit; font-size: 22px; font-weight: bold; letter-spacing: 2px;
+    padding: 14px 38px; border-radius: 12px; border: 3px solid #ffd76a; cursor: pointer;
+    background: linear-gradient(180deg, #c0392b, #8e2418); color: #fff; }
+  .bigbtn:hover { filter: brightness(1.2); }
+  .smallbtn { font-family: inherit; font-size: 14px; padding: 7px 14px; border-radius: 8px;
+    border: 2px solid #c9a227; cursor: pointer; background: #2c1608; color: #f3e6c8; }
+  .smallbtn:hover { background: #4a2a12; }
+  /* Overlays */
+  .overlay { position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+    background: radial-gradient(ellipse at 50% 40%, rgba(58,28,13,.96), rgba(18,8,4,.97)); }
+  .overlay.hidden { display: none; }
+  .gametitle { font-size: 84px; font-weight: bold; letter-spacing: 6px; color: #ffd76a;
+    text-shadow: 0 0 24px rgba(255,122,47,.7), 0 4px 0 #6b2a00; }
+  .subtitle { font-size: 22px; font-style: italic; color: #e8b06a; margin: 6px 0 18px; }
+  .howto { background: #00000066; border: 1px solid #c9a22788; border-radius: 12px;
+    padding: 16px 26px; font-size: 16px; line-height: 1.65; color: #f3e6c8; max-width: 760px;
+    text-align: left; margin-bottom: 22px; }
+  .howto b { color: #ffd76a; }
+  .bigword { font-size: 96px; font-weight: bold; letter-spacing: 8px; }
+  .bigword.win { color: #7ed957; text-shadow: 0 0 30px rgba(126,217,87,.8); }
+  .bigword.loss { color: #ff5a4e; text-shadow: 0 0 30px rgba(255,90,78,.8); }
+  .endstats { font-size: 18px; line-height: 1.7; color: #e8d3a8; margin: 10px 0 22px; }
+  .keys { font-size: 13px; color: #d8b98a; margin-top: 16px; }
+  #muteBtn { position: absolute; top: 12px; right: 24px; z-index: 30; }
+  .floater { position: absolute; z-index: 15; font-size: 30px; font-weight: bold; pointer-events: none;
+    text-shadow: 0 2px 4px #000; animation: floatUp 1.1s ease-out forwards; }
+  @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-56px); } }
+  .shake { animation: shake .3s; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="felt"></div>
+  <canvas id="embers" width="1280" height="720"></canvas>
+  <div class="goldline" style="top:64px"></div>
+  <div class="goldline" style="top:478px"></div>
+
+  <div class="infobar" id="enemyBar">
+    <div class="avatar enemy">&#x265B;</div>
+    <div class="who"><div class="name">THE ASH REGENT</div><div class="sub">Ruler of the Ember Court</div></div>
+    <div class="life"><span class="heart">&#x2764;</span><span id="enemyLife">30</span>
+      <div class="lifebar"><div class="lifefill" id="enemyLifeFill" style="width:100%"></div></div></div>
+    <div class="pill">Mana <b id="enemyMana">0/0</b></div>
+    <div class="pill">Deck <b id="enemyDeck">30</b></div>
+    <div class="spacer"></div>
+    <div class="enemyHandRow" id="enemyHandRow"></div>
+  </div>
+
+  <div class="boardLabel" id="enemyBoardLabel">Regent's Court</div>
+  <div class="board" id="enemyBoard"></div>
+
+  <div id="center">
+    <div id="log"></div>
+    <div id="turnBox">
+      <div id="turnLabel">Your turn</div>
+      <button id="endTurn">END TURN</button>
+      <div id="hint">Click a card, then a target.<br>Keys: 1-7 select, Enter ends turn, R restarts.</div>
+    </div>
+  </div>
+
+  <div class="boardLabel" id="playerBoardLabel">Your Court</div>
+  <div class="board" id="playerBoard"></div>
+
+  <div class="infobar" id="playerBar">
+    <div class="avatar">&#x265A;</div>
+    <div class="who"><div class="name">EMBER WARDEN</div><div class="sub">You, challenger of the court</div></div>
+    <div class="life"><span class="heart">&#x2764;</span><span id="playerLife">30</span>
+      <div class="lifebar"><div class="lifefill you" id="playerLifeFill" style="width:100%"></div></div></div>
+    <div class="pill">Mana <b id="playerMana">0/0</b></div>
+    <div class="pill">Deck <b id="playerDeck">30</b></div>
+    <div class="pill">Turn <b id="turnNum">1</b></div>
+    <div class="spacer"></div>
+    <div class="pill">Score: you <b id="scoreYou">0</b> - <b id="scoreFoe">0</b> wins</div>
+  </div>
+
+  <div id="hand"></div>
+  <button class="smallbtn" id="muteBtn">Sound: ON</button>
+
+  <div class="overlay" id="titleScreen">
+    <div class="gametitle">EMBER COURT</div>
+    <div class="subtitle">A turn-based card battler for the throne of cinders</div>
+    <div class="howto">
+      <b>Goal:</b> reduce the Ash Regent to 0 life before yours reaches 0. Both sides start at 30 life.<br>
+      <b>Each turn:</b> gain mana crystals (1 on turn 1, up to 10), draw a card, then play cards by clicking them. A card costs mana equal to its blue number.<br>
+      <b>Creatures</b> stay on the table and attack with their red number; green is their health. <b>Guards</b> must be attacked before anything else. New creatures rest one turn.<br>
+      <b>Spells</b> strike at once: Ember Bolt burns, Wildfire scorches every enemy creature, Healing Spring mends you, Ember Wisdom draws cards.<br>
+      <b>Suits:</b> Ember hits hard, Thorn guards, Tide heals and draws, Stone endures. Mix them to win.
+    </div>
+    <button class="bigbtn" id="startBtn">START GAME</button>
+    <div class="keys">Mouse: click a card, then click its target. Keyboard: 1-7 select a hand card, Enter ends the turn, R restarts after a win or loss.</div>
+  </div>
+
+  <div class="overlay hidden" id="endScreen">
+    <div class="bigword win" id="endWord">VICTORY</div>
+    <div class="subtitle" id="endSub">The Ember Court is yours.</div>
+    <div class="endstats" id="endStats"></div>
+    <button class="bigbtn" id="againBtn">PLAY AGAIN</button>
+    <div class="keys">Press R to play again.</div>
+  </div>
+</div>
+<script src="game.js"></script>
+</body>
+</html>
