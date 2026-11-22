@@ -8,6 +8,13 @@ A turn-based card battler. You are the Ember Warden, challenging the Ash
 Regent for the throne of cinders. Both sides start at 30 life. Reduce the
 Regent to 0 life before yours reaches 0.
 
+## Screenshots
+
+![Ember Court title screen](screenshots/01-title.jpg)
+![The table, mid-game](screenshots/02-table.jpg)
+![Victory](screenshots/03-win.jpg)
+![Defeat](screenshots/04-loss.jpg)
+
 ## How to play
 
 - Each turn you gain mana crystals: 1 on turn 1, up to 10. Mana refills
