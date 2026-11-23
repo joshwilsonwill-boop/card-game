@@ -11,23 +11,24 @@
     Stone: { glyph: '\u25C6', grad: 'linear-gradient(135deg,#b8a88a,#6b5a3e)', color: '#6b5a3e' }
   };
 
-  // Card definitions. id, name, suit, type, cost, atk, hp, guard, text, effect.
+  // Card definitions. id, name, suit, type, cost, atk, hp, guard, text, effect, glyph.
+  // Each card has its own glyph so no two cards look photocopied at a glance.
   var DEFS = {
-    imp:      { name: 'Ember Imp',      suit: 'Ember', type: 'creature', cost: 1, atk: 2, hp: 1, text: 'A quick spark with teeth.' },
-    sprite:   { name: 'Spark Sprite',   suit: 'Ember', type: 'creature', cost: 1, atk: 1, hp: 1, text: 'On play: draw a card.', effect: { kind: 'draw', amount: 1 } },
-    wolf:     { name: 'Cinder Wolf',    suit: 'Ember', type: 'creature', cost: 2, atk: 3, hp: 2, text: 'It hunts where fire ran.' },
-    sprout:   { name: 'Thorn Sprout',   suit: 'Thorn', type: 'creature', cost: 1, atk: 1, hp: 3, guard: true, text: 'Guard: attack it first.' },
-    sentinel: { name: 'Stone Sentinel', suit: 'Stone', type: 'creature', cost: 3, atk: 2, hp: 5, guard: true, text: 'Guard: a wall that walks.' },
-    herald:   { name: 'Tide Herald',    suit: 'Tide',  type: 'creature', cost: 3, atk: 3, hp: 3, text: 'On play: heal 3 life.', effect: { kind: 'heal', amount: 3 } },
-    serpent:  { name: 'Tide Serpent',   suit: 'Tide',  type: 'creature', cost: 4, atk: 4, hp: 4, text: 'It coils in the shallows.' },
-    knight:   { name: 'Flame Knight',   suit: 'Ember', type: 'creature', cost: 4, atk: 5, hp: 3, text: 'A sword of held wildfire.' },
-    golem:    { name: 'Moss Golem',     suit: 'Thorn', type: 'creature', cost: 5, atk: 4, hp: 6, guard: true, text: 'Guard: slow, immovable.' },
-    phoenix:  { name: 'Ash Phoenix',    suit: 'Ember', type: 'creature', cost: 6, atk: 5, hp: 5, text: 'On play: burn the enemy hero for 2.', effect: { kind: 'damage-hero', amount: 2 } },
-    dragon:   { name: 'Ember Dragon',   suit: 'Ember', type: 'creature', cost: 7, atk: 7, hp: 6, text: 'The court bows as it lands.' },
-    bolt:     { name: 'Ember Bolt',     suit: 'Ember', type: 'spell', cost: 2, text: 'Deal 3 damage to any target.', effect: { kind: 'damage', amount: 3, target: 'any' } },
-    wildfire: { name: 'Wildfire',       suit: 'Ember', type: 'spell', cost: 4, text: 'Burn all enemy creatures for 2.', effect: { kind: 'damage-all-enemy', amount: 2 } },
-    spring:   { name: 'Healing Spring', suit: 'Tide',  type: 'spell', cost: 2, text: 'Heal your hero for 6.', effect: { kind: 'heal', amount: 6 } },
-    wisdom:   { name: 'Ember Wisdom',   suit: 'Tide',  type: 'spell', cost: 2, text: 'Draw 2 cards.', effect: { kind: 'draw', amount: 2 } }
+    imp:      { name: 'Ember Imp',      suit: 'Ember', type: 'creature', cost: 1, atk: 2, hp: 1, text: 'A quick spark with teeth.', glyph: '\u2726' },
+    sprite:   { name: 'Spark Sprite',   suit: 'Ember', type: 'creature', cost: 1, atk: 1, hp: 1, text: 'On play: draw a card.', effect: { kind: 'draw', amount: 1 }, glyph: '\u2727' },
+    wolf:     { name: 'Cinder Wolf',    suit: 'Ember', type: 'creature', cost: 2, atk: 3, hp: 2, text: 'It hunts where fire ran.', glyph: '\u265E' },
+    sprout:   { name: 'Thorn Sprout',   suit: 'Thorn', type: 'creature', cost: 1, atk: 1, hp: 3, guard: true, text: 'Guard: attack it first.', glyph: '\u2740' },
+    sentinel: { name: 'Stone Sentinel', suit: 'Stone', type: 'creature', cost: 3, atk: 2, hp: 5, guard: true, text: 'Guard: a wall that walks.', glyph: '\u265C' },
+    herald:   { name: 'Tide Herald',    suit: 'Tide',  type: 'creature', cost: 3, atk: 3, hp: 3, text: 'On play: heal 3 life.', effect: { kind: 'heal', amount: 3 }, glyph: '\u266A' },
+    serpent:  { name: 'Tide Serpent',   suit: 'Tide',  type: 'creature', cost: 4, atk: 4, hp: 4, text: 'It coils in the shallows.', glyph: '\u3030' },
+    knight:   { name: 'Flame Knight',   suit: 'Ember', type: 'creature', cost: 4, atk: 5, hp: 3, text: 'A sword of held wildfire.', glyph: '\u2694' },
+    golem:    { name: 'Moss Golem',     suit: 'Thorn', type: 'creature', cost: 5, atk: 4, hp: 6, guard: true, text: 'Guard: slow, immovable.', glyph: '\u25B2' },
+    phoenix:  { name: 'Ash Phoenix',    suit: 'Ember', type: 'creature', cost: 6, atk: 5, hp: 5, text: 'On play: burn the enemy hero for 2.', effect: { kind: 'damage-hero', amount: 2 }, glyph: '\u2668' },
+    dragon:   { name: 'Ember Dragon',   suit: 'Ember', type: 'creature', cost: 7, atk: 7, hp: 6, text: 'The court bows as it lands.', glyph: '\u2604' },
+    bolt:     { name: 'Ember Bolt',     suit: 'Ember', type: 'spell', cost: 2, text: 'Deal 3 damage to any target.', effect: { kind: 'damage', amount: 3, target: 'any' }, glyph: '\u26A1' },
+    wildfire: { name: 'Wildfire',       suit: 'Ember', type: 'spell', cost: 4, text: 'Burn all enemy creatures for 2.', effect: { kind: 'damage-all-enemy', amount: 2 }, glyph: '\u2739' },
+    spring:   { name: 'Healing Spring', suit: 'Tide',  type: 'spell', cost: 2, text: 'Heal your hero for 6.', effect: { kind: 'heal', amount: 6 }, glyph: '\u2744' },
+    wisdom:   { name: 'Ember Wisdom',   suit: 'Tide',  type: 'spell', cost: 2, text: 'Draw 2 cards.', effect: { kind: 'draw', amount: 2 }, glyph: '\u263E' }
   };
 
   // Deck recipe: [defId, count] totalling 30 cards.
@@ -56,7 +57,7 @@
     var d = DEFS[defId];
     return { uid: uid++, def: defId, name: d.name, suit: d.suit, type: d.type,
       cost: d.cost, atk: d.atk || 0, hp: d.hp || 0, maxHp: d.hp || 0,
-      guard: !!d.guard, text: d.text, effect: d.effect || null, canAttack: false };
+      guard: !!d.guard, text: d.text, effect: d.effect || null, glyph: d.glyph, canAttack: false };
   }
 
   function newSide() {
@@ -401,7 +402,7 @@
     el.className = 'card' + (opts.mini ? ' mini' : '') + (card.guard ? ' guarded' : '') + (opts.cls ? ' ' + opts.cls : '');
     var html = '<div class="cost">' + card.cost + '</div>' +
       '<div class="suitTag" style="color:' + suit.color + '">' + card.suit + '</div>' +
-      '<div class="art" style="background:' + suit.grad + '">' + suit.glyph + '</div>' +
+      '<div class="art" style="background:' + suit.grad + '">' + (card.glyph || suit.glyph) + '</div>' +
       (card.guard ? '<div class="guardTag">GUARD</div>' : '') +
       '<div class="cname">' + escapeHtml(card.name) + '</div>' +
       '<div class="ctype">' + (card.type === 'creature' ? (card.guard ? 'Guard Creature' : 'Creature') : 'Spell') + '</div>' +
@@ -689,6 +690,28 @@
     render();
     $('turnLabel').textContent = 'EMBER COURT';
     $('hint').innerHTML = 'Turn 9 - one bolt from the throne.<br>Click a card, then a target.';
+    // One big event banner replaces the four-line log: the single focal point.
+    $('log').style.display = 'none';
+    var b = $('eventBanner');
+    b.innerHTML = '<div class="eventBig">\u26A1 EMBER BOLT STRIKES THE REGENT FOR 3 \u26A1</div>' +
+      '<div class="eventSub">Turn 9 - the throne hangs on this turn.</div>';
+    b.classList.remove('hidden');
+  }
+
+  // Title screen shot: the real title overlay, dressed with a one-line rules
+  // summary, an element wheel and four fanned sample cards.
+  function buildFan() {
+    var row = $('fanRow');
+    if (!row || row.children.length) return;
+    var defs = ['dragon', 'phoenix', 'serpent', 'golem'];
+    var rots = [-8, -3, 3, 8];
+    defs.forEach(function (d, i) {
+      var c = makeCard(d); c.canAttack = true;
+      var el = cardEl(c, { mini: true });
+      el.style.transform = 'rotate(' + rots[i] + 'deg)';
+      el.style.cursor = 'default';
+      row.appendChild(el);
+    });
   }
 
   function applyShot() {
@@ -696,6 +719,10 @@
     if (!q) return;
     if (q === 'title') {
       presetCover();
+    } else if (q === 'titlescreen') {
+      document.querySelector('.howto').style.display = 'none';
+      $('titleFlair').classList.remove('hidden');
+      buildFan();
     } else if (q === 'table') {
       presetTable();
     } else if (q === 'win') {

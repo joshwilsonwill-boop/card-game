@@ -128,6 +128,21 @@
     height: 96px; padding: 10px 14px; font-size: 15px; line-height: 1.5; color: #e8d3a8;
     overflow: hidden; }
   #log .turn { color: #ffd76a; font-weight: bold; }
+  /* Event banner: the single focal point on the cover shot, in the log's slot */
+  #eventBanner { flex: 1; height: 96px; border: 2px solid #c9a227; border-radius: 10px;
+    background: linear-gradient(180deg, rgba(120,50,10,.88), rgba(40,14,4,.92));
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 0 22px rgba(255,150,60,.35); text-align: center; }
+  #eventBanner.hidden { display: none; }
+  .eventBig { font-size: 26px; font-weight: bold; letter-spacing: 1px; color: #ffd76a;
+    text-shadow: 0 0 14px rgba(255,150,60,.8), 0 2px 0 #6b2a00; }
+  .eventSub { font-size: 14px; font-style: italic; color: #e8d3a8; margin-top: 5px; }
+  /* Rules hint in the right margin of the player board */
+  #rulesBox { position: absolute; right: 24px; top: 348px; width: 268px; z-index: 4;
+    background: #00000066; border: 1px solid #c9a22788; border-radius: 10px; padding: 10px 12px;
+    font-size: 13px; line-height: 1.55; color: #e8d3a8; }
+  #rulesBox .rbTitle { font-size: 12px; font-weight: bold; letter-spacing: 2px; color: #ffd76a; margin-bottom: 3px; }
+  #rulesBox b { color: #ffd76a; }
   #turnBox { width: 210px; text-align: center; }
   #turnLabel { font-size: 18px; font-weight: bold; letter-spacing: 1px; margin-bottom: 8px;
     color: #ffd76a; text-shadow: 0 0 10px rgba(255,215,106,.5); }
@@ -157,6 +172,16 @@
     padding: 16px 26px; font-size: 16px; line-height: 1.65; color: #f3e6c8; max-width: 760px;
     text-align: left; margin-bottom: 22px; }
   .howto b { color: #ffd76a; }
+  /* Title-screen flair: one-line rules, element wheel, fanned sample cards */
+  #titleFlair.hidden { display: none; }
+  #titleFlair { display: flex; flex-direction: column; align-items: center; }
+  .oneline { font-size: 17px; font-style: italic; color: #e8b06a; margin: 2px 0 12px; }
+  .wheel { display: flex; gap: 10px; margin-bottom: 16px; }
+  .chip { background: #00000066; border: 1px solid #c9a22788; border-radius: 10px; padding: 7px 12px;
+    font-size: 13px; letter-spacing: 1px; white-space: nowrap; }
+  .chip .wglyph { font-size: 16px; margin-right: 4px; }
+  .chip .wrole { color: #d8b98a; font-size: 12px; letter-spacing: 0; }
+  #fanRow { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 20px; }
   .bigword { font-size: 96px; font-weight: bold; letter-spacing: 8px; }
   .crown { font-size: 76px; line-height: 1; margin-bottom: 4px; }
   .crown.win { color: #ffd76a; text-shadow: 0 0 34px rgba(255,215,106,.9), 0 4px 0 #6b2a00; }
@@ -199,6 +224,7 @@
 
   <div id="center">
     <div id="log"></div>
+    <div id="eventBanner" class="hidden"></div>
     <div id="turnBox">
       <div id="turnLabel">Your turn</div>
       <button id="endTurn">END TURN</button>
@@ -208,6 +234,10 @@
 
   <div class="boardLabel" id="playerBoardLabel">Your Court</div>
   <div class="board" id="playerBoard"></div>
+
+  <div id="rulesBox"><div class="rbTitle">THE SUITS</div>
+    <b>Ember</b> hits hard &nbsp;&middot;&nbsp; <b>Thorn</b> guards block first<br>
+    <b>Tide</b> heals and draws &nbsp;&middot;&nbsp; <b>Stone</b> endures</div>
 
   <div class="infobar" id="playerBar">
     <div class="avatar">&#x265A;</div>
@@ -226,7 +256,17 @@
 
   <div class="overlay" id="titleScreen">
     <div class="gametitle">EMBER COURT</div>
-    <div class="subtitle">A turn-based card battler for the throne of cinders</div>
+    <div class="subtitle">A duel of ember and ash</div>
+    <div id="titleFlair" class="hidden">
+      <div class="oneline">Reduce the Ash Regent to 0 life. Mana grows 1 to 10. Guards block the way.</div>
+      <div class="wheel">
+        <div class="chip"><span class="wglyph" style="color:#ff9a3c">&#x2726;</span> EMBER <span class="wrole">hits hard</span></div>
+        <div class="chip"><span class="wglyph" style="color:#5ab8ff">&#x25C9;</span> TIDE <span class="wrole">heals and draws</span></div>
+        <div class="chip"><span class="wglyph" style="color:#7ed957">&#x274B;</span> THORN <span class="wrole">guards</span></div>
+        <div class="chip"><span class="wglyph" style="color:#b8a88a">&#x25C6;</span> STONE <span class="wrole">endures</span></div>
+      </div>
+      <div id="fanRow"></div>
+    </div>
     <div class="howto">
       <b>Goal:</b> reduce the Ash Regent to 0 life before yours reaches 0. Both sides start at 30 life.<br>
       <b>Each turn:</b> gain mana crystals (1 on turn 1, up to 10), draw a card, then play cards by clicking them. A card costs mana equal to its blue number.<br>
